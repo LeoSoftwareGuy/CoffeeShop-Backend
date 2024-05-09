@@ -1,0 +1,7 @@
+ Basically first landing page ('/'), will be layout.tsx in (root) folder
+
+ Before returning from this layout.tsx we can redirect user to other pages if we dont then,
+ children is being rendered and returned , page.tsx
+
+
+ 

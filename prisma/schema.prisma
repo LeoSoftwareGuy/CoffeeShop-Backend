@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Store {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  userId       String
+  billboards   Billboard[]
+  coffeeBrands CoffeeBrand[]
+  sizes        Size[]
+  intensities  Intensity[]
+  products     Product[]
+  orders       Order[]
+  origins      Origin[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Billboard {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  storeId      String        @db.ObjectId
+  store        Store         @relation(fields: [storeId], references: [id])
+  coffeeBrands CoffeeBrand[]
+  label        String
+  imageUrl     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model CoffeeBrand {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  storeId     String    @db.ObjectId
+  store       Store     @relation(fields: [storeId], references: [id])
+  billboardId String    @db.ObjectId
+  billboard   Billboard @relation(fields: [billboardId], references: [id])
+  products    Product[]
+  name        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Size {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  storeId   String    @db.ObjectId
+  store     Store     @relation(fields: [storeId], references: [id])
+  name      String
+  value     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Intensity {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  storeId   String    @db.ObjectId
+  store     Store     @relation(fields: [storeId], references: [id])
+  name      String
+  value     Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Origin {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  storeId   String    @db.ObjectId
+  store     Store     @relation(fields: [storeId], references: [id])
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+// This is specific for the website products
+
+model Product {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  storeId       String      @db.ObjectId
+  store         Store       @relation(fields: [storeId], references: [id])
+  coffeeBrandId String      @db.ObjectId
+  coffeeBrand   CoffeeBrand @relation(fields: [coffeeBrandId], references: [id])
+  sizeId        String      @db.ObjectId
+  size          Size        @relation(fields: [sizeId], references: [id])
+  intensityId   String      @db.ObjectId
+  intensity     Intensity   @relation(fields: [intensityId], references: [id])
+  originId      String      @db.ObjectId
+  origin        Origin      @relation(fields: [originId], references: [id])
+  images        Image[]
+  orderItems    OrderItem[]
+  name          String
+  price         Float // should be decimal in original but prisma ORM does not support this type
+  stock         Int
+  isFeatured    Boolean     @default(false)
+  isArchived    Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Image {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  storeId    String      @db.ObjectId
+  store      Store       @relation(fields: [storeId], references: [id])
+  orderItems OrderItem[]
+  isPaid     Boolean     @default(false)
+  phone      String      @default("")
+  address    String      @default("")
+  email      String      @default("")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId    String  @db.ObjectId
+  order      Order   @relation(fields: [orderId], references: [id])
+  productId  String  @db.ObjectId
+  product    Product @relation(fields: [productId], references: [id])
+  totalPrice Float
+  quantity   Int
+}
