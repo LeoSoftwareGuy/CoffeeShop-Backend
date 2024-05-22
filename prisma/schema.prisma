@@ -94,10 +94,11 @@ model Product {
   images        Image[]
   orderItems    OrderItem[]
   name          String
-  price         Float // should be decimal in original but prisma ORM does not support this type
+  price         Float       // should be decimal in original but Prisma ORM does not support this type
   stock         Int
   isFeatured    Boolean     @default(false)
   isArchived    Boolean     @default(false)
+  description   String?     // New property
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }

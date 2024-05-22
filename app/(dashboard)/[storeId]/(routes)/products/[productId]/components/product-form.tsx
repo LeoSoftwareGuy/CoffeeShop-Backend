@@ -39,6 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 // we are not just getting Product but also its images
 
@@ -64,6 +65,7 @@ const formSchema = z.object({
   intensityId: z.string().min(1),
   sizeId: z.string().min(1),
   originId: z.string().min(1),
+  description: z.string(),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
 });
@@ -81,7 +83,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit product" : "Create product";
-  const description = initialData ? "Edit a product" : "Add a new product";
+  const descriptionMe = initialData ? "Edit a product" : "Add a new product";
   const toastMessage = initialData ? "Product updated" : "Product created";
   const action = initialData ? "Save changes" : "Create";
 
@@ -90,7 +92,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
+    defaultValues: initialData ? {
+      ...initialData,
+      description: initialData.description ?? "", 
+    } : {
       name: "",
       images: [],
       price: 0,
@@ -98,6 +103,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       intensityId: "",
       sizeId: "",
       originId: "",
+      description: "",
       stock: 0,
       isFeatured: false,
       isArchived: false,
@@ -149,7 +155,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         loading={loading}
       />
       <div className="flex items-center justify-between">
-        <Heading title={title} description={description} />
+        <Heading title={title} description={descriptionMe} />
 
         {initialData && (
           <Button
@@ -252,7 +258,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
-           <FormField
+            <FormField
               control={form.control}
               name="coffeeBrandId"
               render={({ field }) => (
@@ -417,6 +423,25 @@ const ProductForm: React.FC<ProductFormProps> = ({
                       This product will not appear anywhere in store
                     </FormDescription>
                   </div>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="w-full">
+          <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={loading}
+                      placeholder="Please add description of the product"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

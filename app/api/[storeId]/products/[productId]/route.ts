@@ -54,6 +54,7 @@ export async function PATCH(req: Request, { params }: { params: IParams }) {
       stock,
       isFeatured,
       isArchived,
+      description
     } = body;
 
     if (!userId) {
@@ -119,6 +120,7 @@ export async function PATCH(req: Request, { params }: { params: IParams }) {
         intensityId,
         originId,
         sizeId,
+        description,
         images: {
           deleteMany: {},
           createMany: {
